@@ -12,10 +12,10 @@ private:
 
 public:
     void _Csort(size_t st, size_t ed) {
+        return;
         vector<size_t> index(this->size(), 0);
         vector<size_t> count(this->size(), 0);
         vector<T> result(this->size(), T());
-
         for (size_t i = st; i < ed; i++) {
             index[i] = (size_t)(predictIndex((*this)[i]) * (this->size()));
             index[i] = min(index[i], ed - 1);
@@ -26,7 +26,8 @@ public:
             count[i] = count[i] + count[i - 1];
         for (size_t i = st; i < ed; i++)
             result[--count[index[i]] + st] = (*this)[i];
-        InsertionSort(result, st, ed);
+        //InsertionSort(&result, st, ed);
+        _TimSort(&result, st, ed);
         for (size_t i = st; i < ed; i++)
             (*this)[i] = result[i];
     }
