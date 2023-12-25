@@ -66,25 +66,29 @@ public:
     void pop_back() { _size = _size > 0 ? _size - 1 : 0; }
 
     void _Csort(size_t st, size_t ed) {
+        const constexpr size_t b = (1<<10);
         size_t* index = (size_t*) malloc(sizeof(size_t) * _capacity);
-        size_t* count = (size_t*) malloc(sizeof(size_t) * _capacity);
+        size_t* count = (size_t*) malloc(sizeof(size_t) * b);
         T* result = (T*) malloc(sizeof(T) * _capacity);
-        for (size_t i = st; i < ed; i++) count[i] = 0;
+        for (size_t i = 0; i < b; i++) count[i] = 0;
         for (size_t i = st; i < ed; i++) {
-            index[i] = (size_t)(predictIndex(arr[i]) * (_size));
+            index[i] = (size_t)(predictIndex(arr[i]) * b);
             count[index[i]]++;
         }
-        for (size_t i = st + 1; i < ed; i++)
+        for (size_t i = 1; i < b; i++)
             count[i] = count[i] + count[i - 1];
         for (size_t i = st; i < ed; i++)
             result[--count[index[i]] + st] = arr[i];
-        //InsertionSort(result, st, ed);
+        for (size_t i = 0; i < b; i++) 
+            _MergeSort(result, count[i], (i+1>=b ? ed : count[i + 1]));
+        InsertionSort(result, st, ed);
         //_TimSort(result, st, ed);
         free(arr);
         arr = result;
+        //arr = (T*) realloc(result, sizeof(T) * _capacity);
         free(index);
         free(count);
-        free(result);
+        //free(result);
         //for (size_t i = st; i < ed; i++) arr[i] = result[i];
     }
     void Csort(void) {
