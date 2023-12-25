@@ -49,6 +49,38 @@ int CountingSort(sortData *arr, int64_t data_size) {
     return 0;
 }
 
+int _merge(sortData *arr, int lt, int mid, int rt) {
+
+    vector<sortData> temp;
+    int p = lt, q = mid;
+
+    while (true) {
+        if (p >= mid and q >= rt) break;
+        if (p >= mid) {
+            temp.push_back(arr[q]);
+            q++;
+            continue;
+        }
+        if (q >= rt) {
+            temp.push_back(arr[p]);
+            p++;
+            continue;
+        }
+        if (arr[p].num <= arr[q].num) {
+            temp.push_back(arr[p]);
+            p++;
+        }
+        else {
+            temp.push_back(arr[q]);
+            q++;
+        }
+    }
+
+    for (int i = lt; i < rt; i++) arr[i] = temp[i - lt];
+
+    return 0;
+}
+
 int _MergeSort(sortData *arr, size_t st, size_t ed) {
     if (st == ed) {
         return 0;
@@ -63,27 +95,15 @@ int _MergeSort(sortData *arr, size_t st, size_t ed) {
         InsertionSort(arr, st, ed);
         return 0;
     } else {
-        size_t mid = (st + ed) / 2;
+        size_t mid = (st + ed + 1) / 2;
 
         _MergeSort(arr, st, mid);
-        _MergeSort(arr, mid + 1, ed);
+        _MergeSort(arr, mid, ed);
 
-        size_t p1 = st;
-        size_t p2 = mid + 1;
-
-        while (p1 != mid and p2 != ed) {
-            if (arr[p1].num <= arr[p2].num) {
-                p1++;
-            } else {
-                swap(arr[p1].num, arr[p2].num);
-                p2++;
-            }
-        }
+        _merge(arr, st, mid, ed);
         
         return 0;
     }
-
-    return 0;
 }
 
 int MergeSort(sortData *arr, int64_t data_size) {
@@ -238,38 +258,6 @@ int InsertionSort(sortData *arr, int st, int ed) {
         }
         arr[j + 1].num = now;
     }
-
-    return 0;
-}
-
-int _merge(sortData *arr, int lt, int mid, int rt) {
-
-    vector<sortData> temp;
-    int p = lt, q = mid;
-
-    while (true) {
-        if (p >= mid and q >= rt) break;
-        if (p >= mid) {
-            temp.push_back(arr[q]);
-            q++;
-            continue;
-        }
-        if (q >= rt) {
-            temp.push_back(arr[p]);
-            p++;
-            continue;
-        }
-        if (arr[p].num <= arr[q].num) {
-            temp.push_back(arr[p]);
-            p++;
-        }
-        else {
-            temp.push_back(arr[q]);
-            q++;
-        }
-    }
-
-    for (int i = lt; i < rt; i++) arr[i] = temp[i - lt];
 
     return 0;
 }
