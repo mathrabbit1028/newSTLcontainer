@@ -7,21 +7,14 @@ using namespace std;
 int main(int argc, char **argv) {
 
     int64_t data_size, data_range;
-    size_t iter_count = 100;
+    size_t iter_count = 100, queries = 10;
     sscanf(argv[1], "%lld", &data_size);
     sscanf(argv[2], "%lld", &data_range);
     if (argv[3] != NULL) sscanf(argv[3], "%lld", &iter_count);
 
-    const sortfn_t fn_ptr[] = {NULL, stlMergeSort, stlRandQSIns, stlIndexSort, stlCountingSort, stlRadixSort};
-    const char* fn_name[] = {"   Csort",
-                             "   merge",
-                             "  randQS",
-                             "   Index",
-                             "Counting",
-                             "   Radix"};
-    //const int fn_cnt = sizeof(fn_name) / sizeof(fn_name[0]); 
-    const int fn_cnt = 2;
-    vector<double> res[fn_cnt];
+    vector<double> res[2];
+    const char* fn_name[2] = {"   Csort",
+                              "     STL"};
 
     for (size_t t = 0; t < iter_count; t++) {
         system("cls");
@@ -42,31 +35,52 @@ int main(int argc, char **argv) {
             for (size_t j = 0; j < 63; j++) newArr[i].dummy[j] = next_r(0, 10) + '0';
             newArr[i].dummy[63] = '\0';
         }
+        newArr.Csort();
+
+        vector<sortData> arr(data_size, sortData());
+        set_seed_manual(seeds);
+        for (size_t i = 0; i < data_size; i++) {
+            arr[i].num = next_r(0, data_range);
+            //arr[i].num = (int64_t)next_normal(0, data_range/10);
+            for (size_t j = 0; j < 63; j++) arr[i].dummy[j] = next_r(0, 10) + '0';
+            arr[i].dummy[63] = '\0';
+        }
+        stlIndexSort(&arr, data_size);
+
+        set_seed_secure(seeds);
+
+        set_seed_manual(seeds);
         double st, ed;
         st = GetTicks();
-        newArr.Csort();
+        for (int j = 0; j < queries; j++) {
+            sortData data;
+            data.num = next_r(0, data_range);
+            //arr[i].num = (int64_t)next_normal(0, data_range/10);
+            for (size_t j = 0; j < 63; j++) data.dummy[j] = next_r(0, 10) + '0';
+            data.dummy[63] = '\0';
+            printf("%d ", newArr.lower_bound(0, newArr.size(), data));
+        }
+        printf("\n");
         ed = GetTicks();
         res[0].push_back((double)(ed - st) / GetFreq());
 
-        vector<sortData> arr(data_size, sortData());
-        for (size_t i = 1; i < fn_cnt; i++) {
-            set_seed_manual(seeds);
-            for (size_t i = 0; i < data_size; i++) {
-                arr[i].num = next_r(0, data_range);
-                //arr[i].num = (int64_t)next_normal(0, data_range/10);
-                for (size_t j = 0; j < 63; j++) arr[i].dummy[j] = next_r(0, 10) + '0';
-                arr[i].dummy[63] = '\0';
-            }
-            double st, ed;
-            st = GetTicks();
-            fn_ptr[i](&arr, data_size);
-            ed = GetTicks();
-            res[i].push_back((double)(ed - st) / GetFreq());
+        set_seed_manual(seeds);
+        st = GetTicks();
+        for (int j = 0; j < queries; j++) {
+            sortData data;
+            data.num = next_r(0, data_range);
+            //arr[i].num = (int64_t)next_normal(0, data_range/10);
+            for (size_t j = 0; j < 63; j++) data.dummy[j] = next_r(0, 10) + '0';
+            data.dummy[63] = '\0';
+            printf("%d ", lower_bound(arr.begin(), arr.end(), data) - arr.begin());
         }
+        printf("\n");
+        ed = GetTicks();
+        res[1].push_back((double)(ed - st) / GetFreq());
     }
     
     printf("n : %lld / k : %lld\n", data_size, data_range);
-    for (size_t i = 0; i < fn_cnt; i++) {
+    for (size_t i = 0; i < 2; i++) {
         double mean = 0, stdev = 0;
         for (int j = 0; j < iter_count; j++) mean += res[i][j];
         mean /= iter_count;

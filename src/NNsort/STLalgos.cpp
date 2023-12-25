@@ -3,7 +3,7 @@
 using namespace std;
 
 
-int _CountingSort(vector<sortData>* arr, size_t st, size_t ed) {
+int _stlCountingSort(vector<sortData>* arr, size_t st, size_t ed) {
     int64_t _min = 0;
     int64_t _max = 0;
 
@@ -38,14 +38,14 @@ int _CountingSort(vector<sortData>* arr, size_t st, size_t ed) {
 }
 
 
-int CountingSort(vector<sortData>* arr, int64_t data_size) {
-    _CountingSort(arr, 0, data_size);
+int stlCountingSort(vector<sortData>* arr, int64_t data_size) {
+    _stlCountingSort(arr, 0, data_size);
 
     return 0;
 }
 
 
-int _MergeSort(vector<sortData>* arr, size_t st, size_t ed) {
+int _stlMergeSort(vector<sortData>* arr, size_t st, size_t ed) {
     if (st == ed) {
         return 0;
     } else if (st + 1 == ed) {
@@ -56,13 +56,13 @@ int _MergeSort(vector<sortData>* arr, size_t st, size_t ed) {
             return 0;
         }
     } else if (st + 16 > ed) {
-        InsertionSort(arr, st, ed);
+        stlInsertionSort(arr, st, ed);
         return 0;
     } else {
         size_t mid = (st + ed) / 2;
 
-        _MergeSort(arr, st, mid);
-        _MergeSort(arr, mid + 1, ed);
+        _stlMergeSort(arr, st, mid);
+        _stlMergeSort(arr, mid + 1, ed);
 
         size_t p1 = st;
         size_t p2 = mid + 1;
@@ -83,14 +83,14 @@ int _MergeSort(vector<sortData>* arr, size_t st, size_t ed) {
 }
 
 
-int MergeSort(vector<sortData>* arr, int64_t data_size) {
-    _MergeSort(arr, 0, data_size);
+int stlMergeSort(vector<sortData>* arr, int64_t data_size) {
+    _stlMergeSort(arr, 0, data_size);
 
     return 0;
 }
 
 
-int _RandQS(vector<sortData>* arr, size_t st, size_t ed) {
+int _stlRandQS(vector<sortData>* arr, size_t st, size_t ed) {
     if (ed - st < 2) return 0;
 
     int64_t pivot = (*arr)[next_r(st, ed)].num;
@@ -107,17 +107,17 @@ int _RandQS(vector<sortData>* arr, size_t st, size_t ed) {
         swap((*arr)[i].num, (*arr)[j].num);
     }
 
-    _RandQS(arr, st, i);
-    _RandQS(arr, i, ed);
+    _stlRandQS(arr, st, i);
+    _stlRandQS(arr, i, ed);
 
     return 0;
 }
 
 
 #define RANDQSINS_THRESHOLD 16
-int _RandQSIns(vector<sortData>* arr, size_t st, size_t ed) {
+int _stlRandQSIns(vector<sortData>* arr, size_t st, size_t ed) {
     if (ed - st < RANDQSINS_THRESHOLD)
-        return InsertionSort(arr, st, ed);
+        return stlInsertionSort(arr, st, ed);
 
     int64_t pivot = (*arr)[next_r(st, ed)].num;
     int64_t i, j;
@@ -133,26 +133,26 @@ int _RandQSIns(vector<sortData>* arr, size_t st, size_t ed) {
         swap((*arr)[i].num, (*arr)[j].num);
     }
 
-    _RandQS(arr, st, i);
-    _RandQS(arr, i, ed);
+    _stlRandQSIns(arr, st, i);
+    _stlRandQSIns(arr, i, ed);
 
     return 0;
 }
 
 
-int RandQSIns(vector<sortData>* arr, int64_t data_size) {
-    return _RandQSIns(arr, 0, data_size);
+int stlRandQSIns(vector<sortData>* arr, int64_t data_size) {
+    return _stlRandQSIns(arr, 0, data_size);
 }
 
 
 int RandQS(vector<sortData>* arr, int64_t data_size) {
-    _RandQS(arr, 0, data_size);
+    _stlRandQS(arr, 0, data_size);
 
     return 0;
 }
 
 
-int _RadixSort(vector<sortData>* arr, size_t st, size_t ed) {
+int _stlRadixSort(vector<sortData>* arr, size_t st, size_t ed) {
     const int r = 16;
 
     int64_t _min = 0;
@@ -193,13 +193,13 @@ int _RadixSort(vector<sortData>* arr, size_t st, size_t ed) {
 }
 
 
-int RadixSort(vector<sortData>* arr, int64_t data_size) {
-    _RadixSort(arr, 0, data_size);
+int stlRadixSort(vector<sortData>* arr, int64_t data_size) {
+    _stlRadixSort(arr, 0, data_size);
 
     return 0;
 }
 
-int find_minrun(int64_t data_size) {
+int stl_find_minrun(int64_t data_size) {
     int r = 0;
     while (data_size >= 32) {
         r |= data_size bitand 1;
@@ -208,7 +208,7 @@ int find_minrun(int64_t data_size) {
     return data_size + r;
 }
 
-int InsertionSort(vector<sortData>* arr, int st, int ed) {
+int stlInsertionSort(vector<sortData>* arr, int st, int ed) {
     for (int i = st; i < ed; i++) {
         int64_t now = (*arr)[i].num;
         int j = i - 1;
@@ -223,7 +223,7 @@ int InsertionSort(vector<sortData>* arr, int st, int ed) {
 }
 
 
-int _merge(vector<sortData>* arr, int lt, int mid, int rt) {
+int _stlmerge(vector<sortData>* arr, int lt, int mid, int rt) {
 
     vector<sortData> temp;
     int p = lt, q = mid;
@@ -256,12 +256,12 @@ int _merge(vector<sortData>* arr, int lt, int mid, int rt) {
 }
 
 
-int _TimSort(vector<sortData>* arr, size_t st, size_t ed) {
-    int minrun = find_minrun(ed - st);
+int _stlTimSort(vector<sortData>* arr, size_t st, size_t ed) {
+    int minrun = stl_find_minrun(ed - st);
 
     for (int sst = st; sst < ed; sst += minrun) {
         int eed = min(sst + minrun, (int)ed);
-        InsertionSort(arr, sst, eed);
+        stlInsertionSort(arr, sst, eed);
     }
 
     int sz = minrun;
@@ -269,7 +269,7 @@ int _TimSort(vector<sortData>* arr, size_t st, size_t ed) {
         for (int lt = st; lt < ed; lt += sz * 2) {
             int mid = min((int)ed, lt + sz);
             int rt = min(lt + 2 * sz, (int)ed);
-            _merge(arr, lt, mid, rt);
+            _stlmerge(arr, lt, mid, rt);
         }
         sz *= 2;
     }
@@ -277,26 +277,19 @@ int _TimSort(vector<sortData>* arr, size_t st, size_t ed) {
     return 0;
 }
 
-int TimSort(vector<sortData>* arr, int64_t data_size) {
-    _TimSort(arr, 0, data_size);
+int stlTimSort(vector<sortData>* arr, int64_t data_size) {
+    _stlTimSort(arr, 0, data_size);
+    return 0;
 }
 
 
-int _IndexSort(vector<sortData>* arr, size_t st, size_t ed) {
+int _stlIndexSort(vector<sortData>* arr, size_t st, size_t ed) {
     sort((*arr).begin() + st, (*arr).begin() + ed);
     return 0;
 }
 
 
-int IndexSort(vector<sortData>* arr, int64_t data_size) {
-    _IndexSort(arr, 0, data_size);
-    return 0;
-}
-
-
-int Csort(vector<sortData>* arr, int64_t data_size) {
-    newVector<sortData> vec;
-    for (size_t i = 0; i < data_size; i++) vec.push_back((*arr)[i]);
-    vec.Csort();
+int stlIndexSort(vector<sortData>* arr, int64_t data_size) {
+    _stlIndexSort(arr, 0, data_size);
     return 0;
 }
