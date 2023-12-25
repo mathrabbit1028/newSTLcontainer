@@ -14,6 +14,7 @@ private:
     T* arr;
     size_t _size;
     size_t _capacity;
+    int ADD;
 public:
     newVector(size_t cap = DEFAULT_CAP) : arr((T*) malloc(sizeof(T) * cap)), _size(0), _capacity(cap) {};
     newVector(const newVector& v) : arr((T*) malloc(sizeof(T) * v._capacity)), _size(v._size), _capacity(v._capacity) {
@@ -53,6 +54,7 @@ public:
             arr = (T*) realloc(arr, sizeof(T) * _capacity);
         }
         arr[_size++] = val;
+        ADD = 1<<(int)round(log2(_size)/3); // N^1/3
     }
     void push_back(T&& val) {
         if (_size >= _capacity) {
@@ -61,12 +63,13 @@ public:
             arr = (T*) realloc(arr, sizeof(T) * _capacity);
         }
         arr[_size++] = std::move(val);
+        ADD = 1<<(int)round(log2(_size)/3); // N^1/3
     }
 
     void pop_back() { _size = _size > 0 ? _size - 1 : 0; }
 
     void _Csort(size_t st, size_t ed) {
-        const constexpr size_t b = (1<<2);
+        const size_t b = (ed - st + 1) >> 3;
         size_t* index = (size_t*) malloc(sizeof(size_t) * _capacity);
         size_t* count = (size_t*) malloc(sizeof(size_t) * b);
         T* result = (T*) malloc(sizeof(T) * _capacity);
@@ -80,10 +83,7 @@ public:
         for (size_t i = st; i < ed; i++)
             result[--count[index[i]] + st] = arr[i];
         for (size_t i = 0; i < b; i++)
-            _MergeSort(result, st + count[i], i+1>=b ? ed : (st + count[i + 1]));
-        for (size_t i = st + count[0]; i < st + count[1]; i++) {
-            cout << result[i].num << " ";
-        }
+            _RandQSIns(result, st + count[i], i+1>=b ? ed : (st + count[i + 1]));
 
         InsertionSort(result, st, ed);
         free(arr);
@@ -95,11 +95,35 @@ public:
         _Csort(0, _size);
     }
 
-    size_t lower_bound(size_t st, size_t ed, T data) {
-        size_t index = (size_t)(predictIndex(data) * (this->size()));
-        while (index < ed && arr[index] < data) index++;
-        while (index > st && arr[index-1] >= data) index--;
-        return index;
+    int lower_bound(int st, int ed, T data) {
+        int index = (int)(predictIndex(data) * (_size));
+        if (index == 0) {
+            if (arr[index] >= data) return index;
+            int add = ADD;
+            while (index + add < ed && arr[index + add] < data) {
+                index += add;
+                add *= 2;
+            }
+            return std::lower_bound(arr + index + 1, arr + min(ed, index + add + 1), data) - arr;
+        }
+
+        if (arr[index] >= data && arr[index - 1] < data) return index;
+        else if (arr[index] < data) {
+            int add = ADD;
+            while (index + add < ed && arr[index + add] < data) {
+                index += add;
+                add *= 2;
+            }
+            return std::lower_bound(arr + index + 1, arr + min(ed, index + add + 1), data) - arr;
+        }
+        else {
+            int add = ADD;
+            while (index - add > 0 && arr[index - add - 1] >= data) {
+                index -= add;
+                add *= 2;
+            }
+            return std::lower_bound(arr + max(0, index - add), arr + index, data) - arr;
+        }
     }
 };
 

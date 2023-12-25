@@ -7,7 +7,7 @@ using namespace std;
 int main(int argc, char **argv) {
 
     int64_t data_size, data_range;
-    size_t iter_count = 100, queries = 10;
+    size_t iter_count = 100, queries = 100000;
     sscanf(argv[1], "%lld", &data_size);
     sscanf(argv[2], "%lld", &data_range);
     if (argv[3] != NULL) sscanf(argv[3], "%lld", &iter_count);
@@ -48,33 +48,26 @@ int main(int argc, char **argv) {
         stlIndexSort(&arr, data_size);
 
         set_seed_secure(seeds);
+        vector<sortData> queryList(queries, sortData());
+        for (size_t j = 0; j < queries; j++) {
+            queryList[j].num = next_r(0, data_range);
+            //arr[i].num = (int64_t)next_normal(0, data_range/10);
+            for (size_t k = 0; k < 63; k++) queryList[j].dummy[k] = next_r(0, 10) + '0';
+            queryList[j].dummy[63] = '\0';
+        }
 
-        set_seed_manual(seeds);
         double st, ed;
         st = GetTicks();
         for (int j = 0; j < queries; j++) {
-            sortData data;
-            data.num = next_r(0, data_range);
-            //arr[i].num = (int64_t)next_normal(0, data_range/10);
-            for (size_t j = 0; j < 63; j++) data.dummy[j] = next_r(0, 10) + '0';
-            data.dummy[63] = '\0';
-            printf("%d ", newArr.lower_bound(0, newArr.size(), data));
+            newArr.lower_bound(0, newArr.size(), queryList[j]);
         }
-        printf("\n");
         ed = GetTicks();
         res[0].push_back((double)(ed - st) / GetFreq());
 
-        set_seed_manual(seeds);
         st = GetTicks();
         for (int j = 0; j < queries; j++) {
-            sortData data;
-            data.num = next_r(0, data_range);
-            //arr[i].num = (int64_t)next_normal(0, data_range/10);
-            for (size_t j = 0; j < 63; j++) data.dummy[j] = next_r(0, 10) + '0';
-            data.dummy[63] = '\0';
-            printf("%d ", lower_bound(arr.begin(), arr.end(), data) - arr.begin());
+            lower_bound(arr.begin(), arr.end(), queryList[j]) - arr.begin();
         }
-        printf("\n");
         ed = GetTicks();
         res[1].push_back((double)(ed - st) / GetFreq());
     }

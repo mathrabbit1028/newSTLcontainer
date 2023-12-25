@@ -12,15 +12,14 @@ int main(int argc, char **argv) {
     sscanf(argv[2], "%lld", &data_range);
     if (argv[3] != NULL) sscanf(argv[3], "%lld", &iter_count);
 
-    const sortfn_t fn_ptr[] = {NULL, stlMergeSort, stlRandQSIns, stlIndexSort, stlCountingSort, stlRadixSort};
+    const sortfn_t fn_ptr[] = {NULL, stlRandQSIns, stlMergeSort, stlIndexSort, stlCountingSort, stlRadixSort};
     const char* fn_name[] = {"   Csort",
-                             "   merge",
                              "  randQS",
+                             "   merge",
                              "   Index",
                              "Counting",
                              "   Radix"};
-    //const int fn_cnt = sizeof(fn_name) / sizeof(fn_name[0]); 
-    const int fn_cnt = 2;
+    const int fn_cnt = sizeof(fn_name) / sizeof(fn_ptr[0]);
     vector<double> res[fn_cnt];
 
     for (size_t t = 0; t < iter_count; t++) {
